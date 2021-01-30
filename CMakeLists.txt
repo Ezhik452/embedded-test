@@ -3,7 +3,8 @@ project(SimpleStaticAllocator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(TestApp main.cpp)
-target_link_libraries(TestApp SimpleStaticAllocator)
+add_subdirectory(externals/catch2)
 
 add_subdirectory(lib)
+add_subdirectory(tests)
+add_subdirectory(app)

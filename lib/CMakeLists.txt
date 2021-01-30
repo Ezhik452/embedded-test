@@ -1,4 +1,4 @@
-set(target "SimpleStaticAllocator")
+set(target "simpleStaticAllocator")
 
 add_library(${target} INTERFACE)
 

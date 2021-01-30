@@ -5,33 +5,42 @@
 #include <cstdint>
 #include <iostream>
 
-template<typename ElementType, uint32_t size>
+template<typename ElementType, size_t size>
 class SimpleStack {
     static_assert(size > 0, "Stack size must be greater than 0");
 private:
-    uint32_t count = 0;
+    size_t curCount = 0;
     std::array<ElementType, size> stack;
 
 public:
     void init() {
-        count = 0;
+        curCount = 0;
     }
 
     bool isEmpty() {
-        return count == 0;
+        return curCount == 0;
+    }
+
+    size_t count() const noexcept {
+        return size - curCount;
     }
 
     bool isFull() {
-        return count == size;
+        return curCount == size;
     }
 
     void push(ElementType element) {
-        stack[count++] = element;
+        if (!isFull()) {
+            stack[curCount++] = element;
+        }
     }
 
     ElementType pop() {
-        ElementType res =  stack[count - 1];
-        count--;
+        ElementType res{};
+        if (!isEmpty()) {
+            res = stack[curCount - 1];
+            curCount--;
+        }
 
         return res;
     }
