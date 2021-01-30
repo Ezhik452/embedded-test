@@ -8,6 +8,7 @@
 template<typename ElementType, size_t size>
 class SimpleStack {
     static_assert(size > 0, "Stack size must be greater than 0");
+
 private:
     size_t curCount = 0;
     std::array<ElementType, size> stack;

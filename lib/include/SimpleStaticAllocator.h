@@ -11,15 +11,17 @@ namespace AllocatorLib {
 
     template<typename Te, size_t chunkSize, size_t poolSize>
     class SimpleStaticAllocator {
-        using ElementType = Te;
-        using ElementTypePointer = ElementType *;
+        using ChunkType = Te;
+        using ChunkTypePointer = ChunkType *;
 
     private:
         static constexpr uint32_t POOL_ELEMENTS_COUNT = poolSize / chunkSize;
 
+        static_assert(POOL_ELEMENTS_COUNT > 0, "Pool size must be greater than 0");
+
     private:
-        ElementType pool[POOL_ELEMENTS_COUNT];
-        SimpleStack<ElementTypePointer, POOL_ELEMENTS_COUNT> freeStack;
+        ChunkType pool[POOL_ELEMENTS_COUNT];
+        SimpleStack<ChunkTypePointer, POOL_ELEMENTS_COUNT> freeStack;
 
         MutexLockFuntionType lock = nullptr;
         MutexReleaseFuntionType release = nullptr;
@@ -32,8 +34,8 @@ namespace AllocatorLib {
 
             freeStack.init();
 
-            for (uint32_t i = 0; i < POOL_ELEMENTS_COUNT; i++) {
-                freeStack.push(&pool[i]);
+            for (auto &element : pool) {
+                freeStack.push(&element);
             }
         }
 
@@ -56,12 +58,12 @@ namespace AllocatorLib {
         }
 
 
-        ElementTypePointer allocate() {
+        ChunkTypePointer allocate() {
             if (lock != nullptr) {
                 lock();
             }
 
-            ElementTypePointer res = nullptr;
+            ChunkTypePointer res = nullptr;
 
             if (!freeStack.isEmpty()) {
                 res = freeStack.pop();
@@ -74,14 +76,14 @@ namespace AllocatorLib {
             return res;
         }
 
-        void free(ElementTypePointer &element) {
+        void free(ChunkTypePointer &chunk) {
             if (lock != nullptr) {
                 lock();
             }
 
-            if (!freeStack.isFull() && element != nullptr) {
-                freeStack.push(element);
-                element = nullptr;
+            if (!freeStack.isFull() && chunk != nullptr) {
+                freeStack.push(chunk);
+                chunk = nullptr;
             }
 
             if (release != nullptr) {
